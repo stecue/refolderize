@@ -6,6 +6,9 @@ __pycache__/
 # C extensions
 *.so
 
+#js files to test
+*.js
+
 # Distribution / packaging
 .Python
 env/
