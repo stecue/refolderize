@@ -13,8 +13,11 @@ print("Unpacking file {0} ...".format(nameJS))
 
 fileJS=open(nameJS,'r')
 
-nameIntro='_intro.js'
+# js function name will not starte with @
+nameIntro='@intro.js'
 fileIntro=open(nameIntro,'w')
+nameMain='@main.js'
+fileMain=open(nameMain,'w')
 
 """
 Define some REs first
@@ -22,10 +25,10 @@ Note that re.match will only match string from the beginning and
 no ^ is needed.
 """
 
-reComment=re.compile(r's*//')
-reFuncStart=re.compile(r'.*function[^)(]*(\([^)(]*)\)')
+reComment=re.compile(r'\s*//')
+reFuncStart=re.compile(r'.*function[^)(]*\([^)(]*\).*')
 
-#The main lo:q
+#The _intro.js
 currLine=fileJS.readline()
 while currLine != "":
     if re.match(reFuncStart,currLine) == None:
@@ -40,3 +43,8 @@ while currLine != "":
         continue
     else:
         break
+
+#The _main.js
+nameFunc1=re.sub(r'.*function[^)(]*\(([^)(]*)\).*\n',r'\1',currLine)
+print(nameFunc1)
+print(currLine,end='')
