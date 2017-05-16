@@ -11,24 +11,73 @@ import sys,re,os
 nameJS=sys.argv[1]
 print("Unpacking file {0} ...".format(nameJS))
 
-fileRaw=open(nameJS,'r')
+#fileJS=open(nameJS,'r')
 
+fileRaw=open(nameJS,'r')
 #use hybrid block and inline comments will cause bugs (becase we are comparing line by line)
 #make block comments starts with a new line
 fileJS=open('@'+nameJS,'w')
+blockcomment=False
 currLine=fileRaw.readline()
 while currLine != "":
-    #delete the extra /*
-    while len(re.findall(r'([^\\]//.*)/\*',currLine)) > 0:
-        currLine=re.sub(r'([^\\]//.*)/\*',r'\1',currLine)
-        print(currLine)
-    while len(re.findall(r'([^\\]//.*)\*/',currLine)) > 0:
-        currLine=re.sub(r'([^\\]//.*)\*/',r'\1',currLine)
-        print(currLine)
-    re.sub(r'/\*',r'\n/*\n',currLine)
-    re.sub(r'\*/',r'\n*/\n',currLine)
-    re.sub(r'\n+',r'\n',currLine)
-    fileJS.write(currLine)
+    if re.match(r'.*/\*',currLine) == None  and blockcomment == False:
+        fileJS.write(currLine)
+        currLine=fileRaw.readline()
+        continue
+
+    if blockcomment == True:
+        if re.match(r'.*?\*/',currLine) == None:
+            #we are safe
+            fileJS.write(currLine)
+            currLine=fileRaw.readline()
+            continue
+        elif re.match(r'.*?\*/\s*$',currLine) != None:
+            #The end has reached
+            blockcomment=False
+            if re.match(r'\s*\*/',currLine) == None:
+                # */ must be in a separate line
+                fileJS.write(re.sub(r'(.*?)\*/.*\n',r'\1',currLine)+'\n')
+                fileJS.write('*/\n')
+            else:
+                fileJS.write(currLine)
+            currLine=fileRaw.readline()
+            continue
+        elif re.match(r'.*\*/',currLine) != None:
+            #some contents after block comment
+            blockcomment=False
+            if re.match(r'\s*\*/',currLine) == None: #means there are leading non-space contents
+                # */ must be in a separate line
+                tmpStr=re.sub(r'(.*?)\s*\*/.*\n',r'\1',currLine)
+                if len(tmpStr) > 0: #print only the non-space contents on a sperate line
+                    fileJS.write(tmpStr+'\n')
+                tmpStr=re.sub(r'(.*?)(\s*\*/)(.*)\n',r'\2',currLine)
+                fileJS.write(tmpStr+'\n')
+            else:
+                fileJS.write(re.sub(r'(.*?\*/)(.*\n)',r'\1\n',currLine))
+            currLine=re.sub(r'(.*?\*/)(.*$)',r'\2',currLine)
+            continue
+    else:
+    # blockcomment == False and we do have a '/*' now
+    # split into two
+        strBefore=re.sub(r'(.*?)(\s*/\*)(.*)\n',r'\1',currLine)
+        strToken=re.sub(r'(.*?)(\s*/\*)(.*)\n',r'\2',currLine)
+        strAfter=re.sub(r'(.*?)(\s*/\*)(.*)\n',r'\3',currLine)
+        if re.match(r'.*//',strBefore) != None:
+        # /* will not be effective. We are safe.
+            fileJS.write(currLine)
+            currLine=fileRaw.readline()
+            continue
+        else:
+            if len(strBefore) > 0:
+                fileJS.write(strBefore+'\n')
+            fileJS.write(strToken+'\n')
+            if len(strAfter) > 0:
+                currLine=strAfter+'\n'
+            else:
+                currLine=fileRaw.readline()
+            blockcomment=True
+            continue
+    #The following line will not be reached.
     currLine=fileRaw.readline()
 
 fileJS.close()
@@ -87,7 +136,17 @@ rightcb=0
 blockcomment=False
 while currLine != "":
     # First test if full inline comment
-    if re.match(reComment,currLine) != None:
+    # now // and */ or */ will not be in the same line.
+    if blockcomment:
+        fileFuns[-1].write(rawCurrLine)
+        if re.match(r'.*?\*/',currLine):
+            blockcomment=False
+        currLine=fileJS.readline()
+        rawCurrLine=currLine
+        continue
+
+    # check for whole line comment starting with //. Now // and */ or */ will not be in the same line.
+    if re.match(reComment,currLine) != None: #It will always be a comment line becase no /* or */ will be present here.
         fileFuns[-1].write(rawCurrLine)
         currLine=fileJS.readline()
         rawCurrLine=currLine
@@ -95,25 +154,13 @@ while currLine != "":
     #Now strip all inline comments
     currLine=re.sub(r'(.*)//.*',r'\1',currLine)
     
-    #Check if it is the inline block comment
-    if blockcomment:
-        if re.match(r'.*\*/',currLine):
-            #strip and continue:
-            currLine=re.sub(r'.*\*/(.*)',r'\1',currLine)
-            blockcomment=False
-            continue
-        else:
+    if blockcomment == False:
+        if re.match(r'.*/\*',currLine): #look for the start of block comment
             fileFuns[-1].write(rawCurrLine)
+            blockcomment=True
             currLine=fileJS.readline()
             rawCurrLine=currLine
             continue
-    #Not that there is not "contniue" so that the "blockcomment" will be
-    # applied to the next line.
-    if blockcomment == False:
-        if re.match(r'.*/\*',currLine):
-            #strip the inline comment and set ifcomment to true;
-            currLine=re.sub(r'(.*)/\*.*',r'\1',currLine)
-            blockcomment=True
     
     #Testing comments done. 
     if re.match(reFuncStart,currLine) == None:
