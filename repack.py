@@ -4,6 +4,8 @@
 Created on Sun May 14 21:41:16 2017
 
 @author: xing
+
+Version: 0.1
 """
 
 import sys,re,os
