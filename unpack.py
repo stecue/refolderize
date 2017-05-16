@@ -98,7 +98,7 @@ no ^ is needed.
 """
 
 reComment=re.compile(r'\s*//')
-reFuncStart=re.compile(r'[\s(]*function[^)(]*\([^)(]*\).*')
+reFuncStart=re.compile(r'[\s(]*function[^)(]*\(\s*[^)(]*\s*\).*')
 
 #The _intro.js
 currLine=fileJS.readline()

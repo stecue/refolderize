@@ -1,2 +1,2 @@
 # ujsrepack
-regenerate a Makefile and the folder structure for a long js file so that you can pack/unpack the user javascript.
+Unpack a long JavaScript file (such as a user.js file) into seperate files/folders and repack the files back to the long .js file.
