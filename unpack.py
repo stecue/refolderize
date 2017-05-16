@@ -206,3 +206,6 @@ while currLine != "":
         currLine=fileJS.readline()
         rawCurrLine=currLine
 
+fileJS.close()
+os.remove(fileJS.name)
+print('All done!')
