@@ -12,4 +12,4 @@ Unpack a long JavaScript file (such as a user.js file) into seperate files/folde
 `repack.py` will search for files whose names start with `@` and pack them back into `Yours.user.js` if the corresponding functions are mentioned in `@main.js`.
 
 ## Examples
-I wrapped these tools in [bash scripts](https://github.com/stecue/fixcjk/tree/master/util) and use them in [FixCJK!](https://github.com/stecue/fixcjk).
+I wrapped these tools in [bash scripts](https://github.com/stecue/fixcjk/tree/master/util#unpacksh-and-repacksh) and use them in [FixCJK!](https://github.com/stecue/fixcjk).
