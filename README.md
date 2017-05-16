@@ -9,4 +9,4 @@ Unpack a long JavaScript file (such as a user.js file) into seperate files/folde
 ## `repack.py`
 ### Usage: `repack.py Yours.user.js`
 
-`repack.py` will search for all files starting with "@" and and pack them back to `Yours.user.js` if the corresponding functions are mentioned in `@main.js`.
+`repack.py` will search for files whose names start with `@` and and pack them back to `Yours.user.js` if the corresponding functions are mentioned in `@main.js`.
