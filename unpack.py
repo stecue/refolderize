@@ -87,8 +87,8 @@ fileRaw.close()
 fileJS=open('@'+nameJS,'r')
 
 # js function name will not starte with @
-nameIntro='@intro.js'
-fileIntro=open(nameIntro,'w')
+namePreface='@preface.js'
+filePreface=open(namePreface,'w')
 nameMain='@main.js'
 fileMain=open(nameMain,'w')
 fileFuns=[fileMain]
@@ -102,19 +102,19 @@ no ^ is needed.
 reComment=re.compile(r'\s*//')
 reFuncStart=re.compile(r'[\s(]*function[^)(]*\(\s*[^)(]*\s*\).*')
 
-#The _intro.js
+#The _preface.js
 currLine=fileJS.readline()
 rawCurrLine=currLine
 while currLine != "":
     if re.match(reComment,currLine) != None:        
         print(currLine,end="")
-        fileIntro.write(currLine)
+        filePreface.write(currLine)
         currLine=fileJS.readline()
         rawCurrLine=currLine
         continue
     elif re.match(reFuncStart,currLine) == None:
         print(currLine,end="")
-        fileIntro.write(currLine)
+        filePreface.write(currLine)
         currLine=fileJS.readline()
         rawCurrLine=currLine
         continue

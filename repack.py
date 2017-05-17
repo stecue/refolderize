@@ -85,10 +85,10 @@ print("Packing functions into {0} ...".format(nameJS))
 
 
 fileJS=open(nameJS,'w')
-#Append fileIntro first.
-fileIntro=open(r'@intro.js','r')
-insertText(fileIntro,fileJS)
-fileIntro.close()
+#Append filePreface first.
+filePreface=open(r'@preface.js','r')
+insertText(filePreface,fileJS)
+filePreface.close()
 #Now let's deal with the main function file:
 
 """
