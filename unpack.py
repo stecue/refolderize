@@ -5,7 +5,7 @@ Created on Sun May 14 21:41:16 2017
 
 @author: xing
 
-Version: 0.1
+Version: 0.2
 """
 
 import sys,re,os
@@ -195,6 +195,13 @@ while currLine != "":
         leftcb=leftcb+len(re.findall('{',currLine))
         rightcb=rightcb+len(re.findall('}',currLine))
         nameFunc=re.sub(r'[\s(]*function\s*([^)(\s]*)\s*.*\n',r'\1',currLine)
+        if nameFunc == '':
+            # ignore IIFE
+            nlevel=nlevel-1
+            fileFuns[-1].write(rawCurrLine)
+            currLine=fileJS.readline()
+            rawCurrLine=currLine
+            continue
         currDir=parentDir+r'@'+nameFunc+r'/'
         os.makedirs(currDir, exist_ok=True)
         #Note that we need to add the line to current level function as well.

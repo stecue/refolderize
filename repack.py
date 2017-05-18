@@ -5,7 +5,7 @@ Created on Sun May 14 21:41:16 2017
 
 @author: xing
 
-Version: 0.1
+Version: 0.2
 """
 
 import sys,re,os
@@ -60,7 +60,13 @@ def expandFunc(currLine,parentFuncPath):
 
     #whole line comments are processed, strip comments for further processing
         currLine=re.sub(r'(.*)//.*',r'\1',currLine)
+        currNameFunc=re.sub(r'[\s(]*function\s*([^)(\s]*)\s*.*\n',r'\1',currLine)
         if re.match(reFuncStart,currLine):
+            if currNameFunc == '':
+                toReturn=toReturn+rawCurrLine
+                currLine=fileFunc.readline()
+                rawCurrLine=currLine
+                continue
             toReturn=toReturn+expandFunc(currLine,parentFuncPath+r'@'+nameFunc+r'/')
             #skip the ending "}"
             currLine=fileFunc.readline()
@@ -138,6 +144,12 @@ while currLine != "":
     currLine=re.sub(r'(.*)//.*',r'\1',currLine)
     if re.match(reFuncStart,currLine):
 #It seems that we need to define a recursive function...
+        nameFunc=re.sub(r'[\s(]*function\s*([^)(\s]*)\s*.*\n',r'\1',currLine)
+        if nameFunc == '':
+            fileJS.write(rawCurrLine)
+            currLine=fileMain.readline()
+            rawCurrLine=currLine
+            continue
         fileJS.write(expandFunc(currLine,r'@main/'))
         #Skip the ending "}"
         currLine=fileMain.readline()
